@@ -12,7 +12,7 @@ logging.basicConfig(
 
 
 if TYPE_CHECKING:
-    from osnova import User
+    from OOP_TRAIN.main import User
 
 
 

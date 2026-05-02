@@ -1,4 +1,4 @@
-from osnova import *
+from OOP_TRAIN.main import *
 from atomic import AtomicPayment
 
 
