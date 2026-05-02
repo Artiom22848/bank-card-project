@@ -5,6 +5,7 @@ from logi import *
 from uuid import uuid4
 import logging
 from typing import List
+from collections import defaultdict
 
 logging.basicConfig(
     level=logging.INFO,
@@ -436,15 +437,14 @@ class TransactionAnalyzer:
         return res
 
 
-    def top_expenses(self, n: int) -> List[str]:
+    def top_expenses(self, n: int) -> List[Transaction]:
         
         expenses = [trans for trans in self.trans if trans.type == 'Снятие']
         if len(expenses) == 0:
             return []
             
         sorted_ex = sorted(expenses, key=lambda x: x.amount, reverse= True)[:n] # сортирую транзакции по сумме и вывожу первые n из них
-        res = [x.sh_trans for x in sorted_ex]
-        return res
+        return sorted_ex
     
 
         
@@ -467,6 +467,22 @@ class TransactionAnalyzer:
         return sum(t.amount for t in self.trans) / len(self.trans)
     
 
-    def suspicious(self, target: int) -> List[str]:
-        return [t.sh_trans for t in self.trans if t.amount >= target]
-        
+    def suspicious(self, target: int) -> List[Transaction]:
+        return [t for t in self.trans if t.amount >= target]
+    
+
+    def monthly_report(self) -> dict:
+        res = defaultdict(lambda: defaultdict(int))
+        for t in self.trans:
+            month = t.trans_time[:7]
+            res[month][t.type] += t.amount
+        for month, types in res.items():
+            print(f'{month}')
+            for type_name, amount in types.items():
+                print(f'    {type_name}: {amount}₽')
+                end = sum(am if tp == 'Пополнение' else -am
+                for tp, am in types.items())
+            print(f'    Итог: {end}₽')
+        return dict(res)
+    
+
