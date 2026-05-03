@@ -35,6 +35,9 @@ class BankCard:
     def __str__(self) -> str:
         return f'ID: {self.__id} {type(self).__name__} Владелец:{self.owner}, Баланс: {self.balance}'
     
+    def __repr__(self):
+        return f'BankCard(,id = {self,id}, owner = {self.owner}, balance = {self.balance}, comission: {type(self.comission).__name__})'
+    
     def __gt__(self, other) -> bool:
         if  not isinstance(other, (int, BankCard )):
             raise TypeError('данные введены некоректно')
@@ -171,6 +174,9 @@ class GoldCard(BankCard):
         self.accumelated_cashback = 0
 
     
+    def __repr__(self):
+        return f'GoldCard(owner = {self.owner}, balance = {self.balance}, cashback_persent = {self.cashback_persent}, comission = {type(self.comission).__name__})'
+
     def deposit(self, amount: int):
         super().deposit(amount)
         
@@ -194,6 +200,9 @@ class StudentCard(BankCard):
         super().__init__(owner, balance, pin, comission)
 
         self.food_points = food_points
+    
+    def __repr__(self):
+        return f'StudentCard(owner = {self.owner}, balance = {self.balance}, food_points = {self.food_points}, comission = {type(self.comission).__name__})'
 
     
     def get_info_bonus(self):
@@ -209,6 +218,10 @@ class CreditCard(BankCard):
         
         self.credit_limit = credit_limit
 
+    def __repr__(self):
+        return f'CreditCard(owner = {self.owner}, balance = {self.balance}, credit_limit = {self.credit_limit}, comission = {type(self.comission).__name__})'
+    
+    
     @property
     def general_balance(self):
         return self.balance + self.credit_limit
@@ -272,7 +285,10 @@ class User:
         self.name = name
         self.cards = []
 
-    
+    def __repr__(self):
+        return f'User(name = {self.name}, cards = {len(self.cards)})'
+
+
     def add_card(self, card: BankCard):
 
         self.cards.append(card)
@@ -428,6 +444,9 @@ class TransactionAnalyzer:
     def __init__(self,user: User):
         self.user = user
         self.trans = self._collect()
+    
+    def __repr__(self):
+        return f'TransactionAnalyzer(user = {self.user}, trans = {len(self.trans)})'
     
 
     def _collect(self) -> List:

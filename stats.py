@@ -48,8 +48,6 @@ class CardStats:
             return None
         return (len(arr_expense) / len(self.history)) * 100
     
-    
-    
     @staticmethod
     def valid(arr: list) -> bool:
         if len(arr) == 0:
