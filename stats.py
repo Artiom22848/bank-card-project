@@ -7,6 +7,11 @@ class CardStats:
         self.card = card
         self.history = card.history
 
+    def __repr__(self):
+        return f'CardStats(card = {self.card!r}, transaction_count = {len(self.history)})'
+    
+    
+    
     def max_expense(self) -> Transaction | None:
         if  not self.valid(self.history):
             return None
