@@ -15,7 +15,7 @@ logging.basicConfig(
 
 class Comission(ABC):
     @abstractmethod
-    def calculate(self,amount: int):
+    def calculate(self):
         '''в наследниках этот метод должен считать комиссию'''
         pass
 
@@ -29,7 +29,7 @@ class StandardComission(Comission):
 
 class NoComission(Comission):
 
-    def calculate(self, amount: int) -> float:
+    def calculate(self) -> float:
         return 0
 
 

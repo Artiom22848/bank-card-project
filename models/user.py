@@ -4,7 +4,7 @@ import os
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
-
+from services.stats import CardStats
 from dop_work.utils import *
 import logging
 from models.cards import BankCard
@@ -44,7 +44,7 @@ class User:
         return self.total_balance
 
     
-    def pay_everywhere(self, amount: int):
+    def pay_everywhere(self, amount: int) -> None:
         
         if self.get_total_balance() < amount:
             logging.error("Ошибка: Недостаточно средств")
@@ -69,7 +69,7 @@ class User:
                 break
             else:
                 print(f'Оплата не завершена, не хватило: {ostatok}')
-        return
+        return None
 
 
     
@@ -86,3 +86,27 @@ class User:
                 return card
         print(f'Ошибка: карта с ID {search_id} не найдена')
         return None
+    
+
+
+    def compare_cards(self,card1_id: str, card2_id: str) -> None:
+        card1 = self.get_card_by_id(card1_id)
+        card2 = self.get_card_by_id(card2_id)
+        card1_stats = CardStats(card1)
+        card2_stats = CardStats(card2)
+        
+        
+        print(f'Карта 1: {type(card1).__name__} | Баланс: {card1.balance}₽ | Транзакций: {len(card1_stats.history)}')
+        print(f'Карта 2: {type(card2).__name__} | Баланс: {card2.balance}₽ | Транзакций: {len(card2_stats.history)}')
+        print(f'\nПобедитель по балансу: {type(max(card1,card2, key= lambda x : x.balance)).__name__}')
+        if not card1_stats.history and not card2_stats.history :
+            print('История транзакций пуста у обеих карт')
+            return
+        print(f'Победитель по активности: {type(max(card1_stats,card2_stats, key= lambda x : len(x.history))).__name__}')
+        avg1 = card1_stats.average_expense()
+        avg2 = card2_stats.average_expense()
+        if avg1 is not None and avg2 is not None:
+            print(f'Средний чек карты 1: {avg1}₽')
+            print(f'Средний чек карты 2: {avg2}₽')
+        else:
+            print('Недостаточно данных для среднего чека')
