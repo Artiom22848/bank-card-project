@@ -1,5 +1,10 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from models.cards import BankCard
 import datetime
-from main import BankCard, Transaction
+from models.transaction import Transaction
 
 class CardStats:
 
@@ -58,4 +63,3 @@ class CardStats:
         if len(arr) == 0:
             return False
         return True
-    

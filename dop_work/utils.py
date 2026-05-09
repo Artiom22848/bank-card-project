@@ -93,5 +93,3 @@ class InvalidPinError(BankError):
     def __init__(self):
         super().__init__(f'Неверный пин')
 
-
-        

@@ -41,4 +41,3 @@ class LoggingMixn:
     def withdraw(self, amount: int, pin_code):
         logging.exception("выполняю сбор информации")
         super().withdraw(amount, pin_code)
-    

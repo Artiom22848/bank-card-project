@@ -1,6 +1,12 @@
 from __future__ import annotations
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from models.user import User
 from typing import TYPE_CHECKING
 import logging
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
@@ -12,7 +18,7 @@ logging.basicConfig(
 
 
 if TYPE_CHECKING:
-    from OOP_TRAIN.main import User
+    from OOP_TRAIN.models import User
 
 
 
