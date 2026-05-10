@@ -1,4 +1,3 @@
+bank.log
 __pycache__/
 *.pyc
-*.log
-.env
