@@ -34,6 +34,7 @@ class BankCard:
             self.observers = []
             self.__id = str(uuid4())[:8]        
             self.comission = comission
+            self.observers = [LogNotification()]
 
         else:
             raise ValueError('Неправильный начальный баланс')
@@ -123,6 +124,9 @@ class BankCard:
                 print(trans)
 
     def  add_observer(self, observer: CardObserver) -> None:
+        if type(observer) in [type(o) for o in self.observers]:
+            print(f'{type(observer).__name__} уже записан')
+            return
         self.observers.append(observer)
     
     def remove_observer(self, observer: CardObserver) -> None:
@@ -132,6 +136,17 @@ class BankCard:
         for observer in self.observers:
             observer.update(event, amount, self.id)
 
+    
+    def get_observers_count(self) -> int:
+        return len(self.observers)
+    
+    def list_observers(self) -> None:
+        if not self.observers:
+            print('Наблюдателей нету')
+            return
+        for i, obs in enumerate(self.observers):
+            print(f'{i+1}. {type(obs).__name__}')
+    
     @property
     def balance(self) -> int:
         '''геттер чтобы получать данные о балансе'''
