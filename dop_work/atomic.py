@@ -7,14 +7,6 @@ from models.user import User
 from typing import TYPE_CHECKING
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler("bank.log"),
-        logging.StreamHandler()         
-    ]
-) 
 
 
 if TYPE_CHECKING:

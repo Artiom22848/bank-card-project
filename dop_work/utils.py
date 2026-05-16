@@ -3,14 +3,6 @@ from typing import Callable
 from abc import ABC, abstractmethod
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler("bank.log"),
-        logging.StreamHandler()         
-    ]
-) 
 
 
 class Comission(ABC):
@@ -55,7 +47,7 @@ class TransactionLimit:
                 return func(*args, **kwargs)
             
             else:
-                raise PermissionError(f'Лимит бесплантных вызовов для карты {card.id} исчерап!')
+                raise PermissionError(f'Лимит бесплатных вызовов для карты {card.id} исчерпан!')
         return wrapper
     
 

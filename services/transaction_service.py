@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from models.transaction import Transaction
-from models.transaction import Transaction
 from collections import defaultdict
 from typing import List
 from models.user import User
@@ -36,12 +35,12 @@ class TransactionAnalyzer:
     
 
         
-    def total_by_type(self, type: str) -> int:
+    def total_by_type(self, trans_type: str) -> int:
         totals = {}
         for transac in self.trans:
             totals[transac.type] = totals.get(transac.type,0) + transac.amount # для каждого вида транкзации добавлюю сумму 
 
-        return totals.get(type,0)
+        return totals.get(trans_type,0)
     
     def most_active_card(self):
         if not self.user.cards:
@@ -64,11 +63,11 @@ class TransactionAnalyzer:
         for t in self.trans:
             month = t.trans_time[:7]
             res[month][t.type] += t.amount
-        for month, types in res.items():
+        for month, trans_types in res.items():
             print(f'{month}')
-            for type_name, amount in types.items():
+            for type_name, amount in trans_types.items():
                 print(f'    {type_name}: {amount}₽')
                 end = sum(am if tp == 'Пополнение' else -am
-                for tp, am in types.items())
+                for tp, am in trans_types.items())
             print(f'    Итог: {end}₽')
         return dict(res)

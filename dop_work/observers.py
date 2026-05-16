@@ -1,15 +1,6 @@
 from abc import ABC, abstractmethod
 import logging
 
-logging.basicConfig(
-    level= logging.INFO,
-    format= '%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler("bank.log", encoding= 'utf-8'),
-        logging.StreamHandler()         
-    ],
-    force=True 
-) 
 
 
 class CardObserver(ABC):

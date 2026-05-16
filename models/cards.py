@@ -12,15 +12,6 @@ import json
 from uuid import uuid4
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler("bank.log", encoding= 'utf-8'),
-        logging.StreamHandler()         
-    ],
-    force=True 
-) 
 
 
 class BankCard:
@@ -43,19 +34,19 @@ class BankCard:
         return f'ID: {self.__id} {type(self).__name__} Владелец:{self.owner}, Баланс: {self.balance}'
     
     def __repr__(self):
-        return f'BankCard(,id = {self,id}, owner = {self.owner}, balance = {self.balance}, comission: {type(self.comission).__name__})'
+        return f'BankCard(id = {self.id}, owner = {self.owner}, balance = {self.balance}, comission: {type(self.comission).__name__})'
     
     def __gt__(self, other) -> bool:
         if  not isinstance(other, (int, BankCard )):
             raise TypeError('данные введены некоректно')
-        else:
-           return self.balance > other.balance      
+        other_balance = other.balance if isinstance(other, BankCard) else other
+        return self.balance > other_balance      
     
     def __lt__(self, other)-> bool:
         if  not isinstance(other, (int, BankCard )):
             raise TypeError('данные введены некоректно')
-        else:
-            return self.balance < other.balance
+        other_balance = other.balance if isinstance(other, BankCard) else other
+        return self.balance < other_balance
 
     def __eq__(self, value) -> bool:
         if  not isinstance(value, (int, BankCard )):

@@ -42,7 +42,9 @@ class CardStats:
             return None
         return sum(t.amount for t in arr_expense) / len(arr_expense)
 
-    def most_active_weekday(self) -> str:
+    def most_active_weekday(self) -> str | None:
+        if  not self.valid(self.history):
+            return None
         res = {}
         for t in self.history:
             dt = datetime.datetime.strptime(t.trans_time, "%Y-%m-%d %H:%M:%S")

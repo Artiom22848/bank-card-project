@@ -1,14 +1,19 @@
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler("bank.log", encoding= 'utf-8'),
-        logging.StreamHandler()         
-    ],
-    force=True 
-) 
+def setup_logging():
+    """Настройка логирования для всего"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(message)s',
+        handlers=[
+            logging.FileHandler("bank.log", encoding='utf-8'),
+            logging.StreamHandler()         
+        ],
+        force=True 
+    )
+
+
+
 
 class LimitMixin:
 

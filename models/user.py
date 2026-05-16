@@ -9,15 +9,7 @@ from dop_work.utils import *
 import logging
 from models.cards import BankCard
 from models.transaction import Transaction
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler("bank.log", encoding= 'utf-8'),
-        logging.StreamHandler()         
-    ],
-    force=True 
-) 
+
 
 
 class User:
@@ -59,10 +51,9 @@ class User:
                 try:
                     card.withdraw(to_withdraw, card.my_pin)
                     ostatok -= to_withdraw
-                    card.new_transaction = Transaction('Снятие', ostatok)
                     logging.info(f"Списано {to_withdraw} с карты {card.id}. Осталось: {ostatok}")
-                except Exception as f:
-                    logging.warning(f"Не удалось списать с карты {card.id}: {f}")
+                except Exception as e:
+                    logging.warning(f"Не удалось списать с карты {card.id}: {e}")
 
             if ostatok <= 0:
                 print(f'Оплатна успешно прошла')

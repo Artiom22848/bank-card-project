@@ -1,8 +1,13 @@
+from dop_work.logi import setup_logging
+setup_logging()
+from models.cards import BankCard
+from dop_work.utils import *
 
-from factory.card_factory import *
 
-card = CardFactory.create_card('gold', 'Артём', 1000, '1234')
-card.add_observer(SMSNotification())
-card.add_observer(SMSNotification())  # дубликат — не добавится
-card.list_observers()
-print(card.get_observers_count())
+
+card1 = BankCard('Артём', 1000, '1234', NoComission)
+card2 = BankCard('Иван', 500, '5678', NoComission)
+
+print(card1 > card2)       # ✅ True
+print(card1 > 800)         # ✅ True
+print(card2 < 1000)
