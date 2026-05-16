@@ -22,14 +22,14 @@ class Comission(ABC):
      
 
 class StandardComission(Comission):       
-    def calculate(self, amount: int):
+    def calculate(self, amount: int) -> float:
         res = amount * 0.01
         return res
     
 
 class NoComission(Comission):
 
-    def calculate(self) -> float:
+    def calculate(self,amount: int) -> int:
         return 0
 
 

@@ -19,7 +19,7 @@ class Transaction:
     def __init__(self, type: str, amount: int):
         self.type = type
         self.amount = amount
-        logging.info(f'Записываю в историю транкзакцию')
+        logging.info(f'Записываю в историю транзакцию')
         self.trans_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def __repr__(self) -> str:

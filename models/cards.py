@@ -4,7 +4,7 @@ import os
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
-
+from dop_work.observers import *
 from dop_work.utils import *
 from dop_work.logi import *
 from models.transaction import *
@@ -31,6 +31,7 @@ class BankCard:
             self._balance = balance
             self.__pin = pin
             self.history = []
+            self.observers = []
             self.__id = str(uuid4())[:8]        
             self.comission = comission
 
@@ -87,6 +88,7 @@ class BankCard:
     def deposit(self,amount: int):
         if BankCard.is_valid_amount(amount):
             self._balance += amount
+            self._notify('Пополнение', amount)
             new_transaction = Transaction('Пополнение', amount)
             self.history.append(new_transaction)
             print(f'Счёт пополнен на {amount}')
@@ -105,8 +107,9 @@ class BankCard:
                 com = self.comission.calculate(amount)
                 total = amount + com
                 new_transaction = Transaction('Снятие', amount)
-                self.history.append(new_transaction)
                 self._balance -= total
+                self.history.append(new_transaction)
+                self._notify('Снятие', total)
                 print(f'Снято {amount}, Комиссия: {com}. Итог списания {total}')
         else:
             raise ValueError('Нельзя делать покупки на отрицательную сумму')
@@ -119,6 +122,15 @@ class BankCard:
             for trans in self.history:
                 print(trans)
 
+    def  add_observer(self, observer: CardObserver) -> None:
+        self.observers.append(observer)
+    
+    def remove_observer(self, observer: CardObserver) -> None:
+        self.observers.remove(observer)
+    
+    def _notify(self, event: str, amount: int) -> None:
+        for observer in self.observers:
+            observer.update(event, amount, self.id)
 
     @property
     def balance(self) -> int:
