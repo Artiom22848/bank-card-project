@@ -18,6 +18,8 @@ class BankCard:
 
     def __init__(self,owner: str, balance: int, pin: str, comission: Comission):
         if BankCard.is_valid_amount(balance):
+            self.daily_limit = 50000
+            self.is_frozen = None
             self.owner = owner
             self._balance = balance
             self.__pin = pin
@@ -78,33 +80,40 @@ class BankCard:
     
 
     def deposit(self,amount: int):
-        if BankCard.is_valid_amount(amount):
-            self._balance += amount
-            self._notify('Пополнение', amount)
-            new_transaction = Transaction('Пополнение', amount)
-            self.history.append(new_transaction)
-            print(f'Счёт пополнен на {amount}')
+        if  not self.is_frozen:
+            raise PermissionError('карта заморожена')
+        else:
+            if BankCard.is_valid_amount(amount):
+                self._balance += amount
+                self._notify('Пополнение', amount)
+                new_transaction = Transaction('Пополнение', amount)
+                self.history.append(new_transaction)
+                print(f'Счёт пополнен на {amount}')
 
     @trace_transaction
     def withdraw(self,amount: int, pin_code: str):
-        if BankCard.is_valid_amount(amount):
-            if pin_code != self.__pin:
-                raise InvalidPinError
-
-            elif self.balance < amount:
-                logging.error("Ошибка: Недостаточно средств")
-                raise ValueError(f'Недостаточно средств')
-            
-            else:
-                com = self.comission.calculate(amount)
-                total = amount + com
-                new_transaction = Transaction('Снятие', amount)
-                self._balance -= total
-                self.history.append(new_transaction)
-                self._notify('Снятие', total)
-                print(f'Снято {amount}, Комиссия: {com}. Итог списания {total}')
+        if  not self.is_frozen:
+            raise PermissionError('карта заморожена')
         else:
-            raise ValueError('Нельзя делать покупки на отрицательную сумму')
+            self.card_limit_checker.check_limit(self, amount)    
+            if BankCard.is_valid_amount(amount):
+                if pin_code != self.__pin:
+                    raise InvalidPinError
+
+                elif self.balance < amount:
+                    logging.error("Ошибка: Недостаточно средств")
+                    raise ValueError(f'Недостаточно средств')
+                
+                else:
+                    com = self.comission.calculate(amount)
+                    total = amount + com
+                    new_transaction = Transaction('Снятие', amount)
+                    self._balance -= total
+                    self.history.append(new_transaction)
+                    self._notify('Снятие', total)
+                    print(f'Снято {amount}, Комиссия: {com}. Итог списания {total}')
+            else:
+                raise ValueError('Нельзя делать покупки на отрицательную сумму')
 
 
     def show_history(self) -> str:

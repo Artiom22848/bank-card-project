@@ -8,8 +8,6 @@ from services.stats import CardStats
 from dop_work.utils import *
 import logging
 from models.cards import BankCard
-from models.transaction import Transaction
-
 
 
 class User:
@@ -35,6 +33,19 @@ class User:
 
         return self.total_balance
 
+    def freeze_card(self, card_id: str) -> None:
+        card = self.get_card_by_id(card_id)
+        card.is_frozen = True
+        card._notify(f'Карта {type(card.__qualname__)} заморожена')
+        return None
+    
+    def unfreeze_card(self, card_id: str) -> None:
+        card = self.get_card_by_id(card_id)
+        card.is_frozen = False
+        card._notify(f'Карта {type(card.__qualname__)} разморожена')
+        return None
+    
+    
     
     def pay_everywhere(self, amount: int) -> None:
         
@@ -70,7 +81,7 @@ class User:
             print(f'{card.owner} | {type(card).__name__}: {info}')
 
 
-    def get_card_by_id(self, search_id):
+    def get_card_by_id(self, search_id) -> BankCard | None:
         
         for card in self.cards:
             if card.id == search_id:
