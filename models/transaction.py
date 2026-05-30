@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+from enum import Enum
 import logging
 
 @dataclass(frozen=True)
@@ -11,10 +12,15 @@ class Withdraw:
     amount: int
     comission: int
 
+class TransferType(Enum):
+    TO = 0,
+    FROM = 1,
+
 @dataclass(frozen=True)
 class Transfer:
     amount: int
-    to_id: int
+    other_id: int
+    transfer_type: TransferType
 
 Transaction = Deposit | Withdraw | Transfer
 
@@ -24,8 +30,13 @@ def transaction_to_str(self: Transaction) -> str:
             return f'Депозит: {amount}'
         case Withdraw(amount, comission):
             return f'Снятие: {amount} с комиссией {comission}'
-        case Transfer(amount, to_id):
-            return f'Перевод: {amount} на счёт {to_id}'
+        case Transfer(amount, other_id, tt):
+            match tt:
+                case TransferType.TO:
+                    return f'Перевод: {amount} на счёт {other_id}'
+                case TransferType.FROM:
+                    return f'Перевод: {amount} со счёта {other_id}'
+
 
 '''
 class Transaction:
