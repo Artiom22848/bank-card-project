@@ -10,13 +10,13 @@ class CardStats:
 
     def __init__(self,card: BankCard):
         self.card = card
-        self.history = card.history
+        self.history = card.transaction_history
 
     def __repr__(self):
         return f'CardStats(card = {self.card!r}, transaction_count = {len(self.history)})'
-    
-    
-    
+
+
+
     def max_expense(self) -> Transaction | None:
         if  not self.valid(self.history):
             return None
@@ -24,7 +24,7 @@ class CardStats:
         if  not self.valid(arr_expense):
             return None
         return max(arr_expense, key= lambda x: x.amount)
-    
+
     def min_expense(self) ->  Transaction | None:
         if not self.valid(self.history):
             return None
@@ -32,7 +32,7 @@ class CardStats:
         if  not self.valid(arr_expense):
             return None
         return min(arr_expense, key= lambda x: x.amount)
-    
+
 
     def average_expense(self) -> float | None:
         if  not self.valid(self.history):
@@ -59,7 +59,7 @@ class CardStats:
         if  not self.valid(arr_expense) :
             return None
         return (len(arr_expense) / len(self.history)) * 100
-    
+
     @staticmethod
     def valid(arr: list) -> bool:
         if len(arr) == 0:

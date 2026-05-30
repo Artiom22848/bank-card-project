@@ -1,32 +1,18 @@
 from functools import wraps
 from typing import Callable
-from abc import ABC, abstractmethod
 import logging
+from enum import Enum
 
+class Commission(Enum):
+    STANDARD = 0
+    FREE = 1
 
-
-class Comission(ABC):
-    @abstractmethod
-    def calculate(self):
-        '''в наследниках этот метод должен считать комиссию'''
-        pass
-
-     
-
-class StandardComission(Comission):       
-    def calculate(self, amount: int) -> float:
-        res = amount * 0.01
-        return res
-    
-
-class NoComission(Comission):
-
-    def calculate(self,amount: int) -> int:
-        return 0
-
-
-
-
+    def calculate(self, amount: int) -> int:
+        match self:
+            case Commission.STANDARD:
+                return int(float(amount) * 0.01)
+            case Commission.FREE:
+                return 0
 
 class TransactionLimit:
     def __init__(self, max_limit: int):
@@ -45,11 +31,11 @@ class TransactionLimit:
             if  current_calls < self.max_limit:
                 self.calls_data[card_id] = current_calls + 1
                 return func(*args, **kwargs)
-            
+
             else:
                 raise PermissionError(f'Лимит бесплатных вызовов для карты {card.id} исчерпан!')
         return wrapper
-    
+
 
 def require_auth(func:Callable):
     raise NotImplementedError
@@ -84,4 +70,3 @@ class InvalidPinError(BankError):
     '''неверный пин код'''
     def __init__(self) -> None:
         super().__init__(f'Неверный пин')
-

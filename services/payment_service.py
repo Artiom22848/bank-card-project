@@ -1,14 +1,12 @@
-import sys
 import os
+import sys
+
+from dop_work.utils import *
+from models.cards import BankCard
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
-
-from dop_work.utils import *
-
-from models.cards import BankCard
-
 
 class PaymentSystem:
     _instance = None
@@ -19,24 +17,20 @@ class PaymentSystem:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def transfer(self, from_card: BankCard, to_card: BankCard, amount: int, pin: str):
-        if  not from_card.check_pin(pin):
-            raise InvalidPinError
-        try:
-            from_card.withdraw(amount, pin)
+    def transfer(self, from_card: BankCard, pin: str, to_card: BankCard, amount: int) -> None:
+        BankCard.validate_amount(amount)
+        from_card.validate_pin(pin)
+        from_card.validate_for_transactions()
+        to_card.validate_for_transactions()
+        '''todo проверить на дневные лимиты не шарю как это делать'''
 
-            try:
-                to_card.deposit(amount)
-            except Exception as e:
-                from_card.deposit(amount)
-                raise RuntimeError(f'Ошибка зачисления: {e}: Деньги вовзращены')
-            else:
-                self._total_volume += amount
-                print(f'Перевод успешно сделан')
-        except ValueError as e:
-            print(f'Перевод невозможен: {e}')
-        
-    
+        if from_card.balance < amount:
+            raise PermissionError('Недостаточно средств на балансе')
+
+        from_card.balance -= amount
+        to_card.balance += amount
+        self._total_volume += amount
+
     @classmethod
     def get_stats(cls):
         print(f'Через систему прошло всего: {cls._total_volume}')
