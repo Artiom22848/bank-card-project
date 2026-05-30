@@ -41,8 +41,10 @@ class TransactionHistory:
         else:
             raise ValueError('Отсутствуют подходящие транзакции')
     
+    
     def get_last(self, n: int) -> List[Transaction]:
         return self.all_transaction[-n:]
+    
     
     def filter_by_date(self, date: str) -> List[Transaction]:
         res = []

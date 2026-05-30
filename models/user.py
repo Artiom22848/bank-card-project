@@ -12,7 +12,7 @@ from models.cards import BankCard
 
 class User:
     
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         
         self.name = name
         self.cards = []
@@ -21,7 +21,7 @@ class User:
         return f'User(name = {self.name}, cards = {len(self.cards)})'
 
 
-    def add_card(self, card: BankCard):
+    def add_card(self, card: BankCard) -> None:
 
         self.cards.append(card)
 
@@ -75,7 +75,7 @@ class User:
 
 
     
-    def show_all_bonuses(self):
+    def show_all_bonuses(self) -> None:
         for card in self.cards:
             info = card.get_info_bonus()
             print(f'{card.owner} | {type(card).__name__}: {info}')

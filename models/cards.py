@@ -16,10 +16,10 @@ import logging
 
 class BankCard:
 
-    def __init__(self,owner: str, balance: int, pin: str, comission: Comission):
+    def __init__(self,owner: str, balance: int, pin: str, comission: Comission) -> None:
         if BankCard.is_valid_amount(balance):
             self.daily_limit = 50000
-            self.is_frozen = None
+            self.is_frozen = False
             self.owner = owner
             self._balance = balance
             self.__pin = pin
@@ -70,17 +70,17 @@ class BankCard:
         
    
 
-    def  get_info_bonus(self):
+    def  get_info_bonus(self) -> str:
         return("бонусов нету")
     
         
-    def display_info(self):
+    def display_info(self) -> str:
         '''вывод информации'''
         print(f'Владелец: {self.owner}, Баланс: {self._balance}')
     
 
-    def deposit(self,amount: int):
-        if  not self.is_frozen:
+    def deposit(self,amount: int) -> None:
+        if  self.is_frozen:
             raise PermissionError('карта заморожена')
         else:
             if BankCard.is_valid_amount(amount):
@@ -91,8 +91,8 @@ class BankCard:
                 print(f'Счёт пополнен на {amount}')
 
     @trace_transaction
-    def withdraw(self,amount: int, pin_code: str):
-        if  not self.is_frozen:
+    def withdraw(self,amount: int, pin_code: str) -> None:
+        if  self.is_frozen:
             raise PermissionError('карта заморожена')
         else:
             self.card_limit_checker.check_limit(self, amount)    
@@ -154,7 +154,7 @@ class BankCard:
         return self._balance
         
     @balance.setter
-    def balance(self, value: int):
+    def balance(self, value: int) -> None:
         '''сеттер для изменния баланса'''
         if value < 0:
             raise ValueError('Баланс не может быть отрицательным')
@@ -199,7 +199,7 @@ class BankCard:
 class GoldCard(BankCard):
         
     
-    def __init__(self, owner: str, balance: int, pin: str, cashback_persent: int, comission: Comission ):
+    def __init__(self, owner: str, balance: int, pin: str, cashback_persent: int, comission: Comission ) -> None:
         super().__init__(owner, balance, pin, comission)
         
         self.cashback_persent = cashback_persent
@@ -209,18 +209,18 @@ class GoldCard(BankCard):
     def __repr__(self):
         return f'GoldCard(owner = {self.owner}, balance = {self.balance}, cashback_persent = {self.cashback_persent}, comission = {type(self.comission).__name__})'
 
-    def deposit(self, amount: int):
+    def deposit(self, amount: int) -> None:
         super().deposit(amount)
         
         self.accumelated_cashback += amount * (self.cashback_persent / 100)
 
 
-    def get_info_bonus(self):
+    def get_info_bonus(self) -> str:
         return (f'У вас накопилось: {self.accumelated_cashback}')
     
 
     @classmethod
-    def promo_card(cls, owner: str,comission: Comission) :
+    def promo_card(cls, owner: str,comission: Comission) -> BankCard:
         promo = cls(owner, 500, '7777', 10, comission)
         return promo
 
@@ -228,7 +228,7 @@ class GoldCard(BankCard):
 
 class StudentCard(BankCard):
 
-    def __init__(self, owner: str, balance: int, pin: str, food_points: int, comission: Comission):
+    def __init__(self, owner: str, balance: int, pin: str, food_points: int, comission: Comission) -> None:
         super().__init__(owner, balance, pin, comission)
 
         self.food_points = food_points
@@ -237,7 +237,7 @@ class StudentCard(BankCard):
         return f'StudentCard(owner = {self.owner}, balance = {self.balance}, food_points = {self.food_points}, comission = {type(self.comission).__name__})'
 
     
-    def get_info_bonus(self):
+    def get_info_bonus(self) -> str:
         return (f'Баллы столовой: {self.food_points}')
 
 
@@ -245,7 +245,7 @@ class StudentCard(BankCard):
 class CreditCard(BankCard):
 
 
-    def __init__(self, owner: str, balance: int, pin: str, credit_limit: int, comission: Comission):
+    def __init__(self, owner: str, balance: int, pin: str, credit_limit: int, comission: Comission) -> None:
         super().__init__(owner, balance, pin, comission)
         
         self.credit_limit = credit_limit
@@ -271,7 +271,7 @@ class CreditCard(BankCard):
         self._balance = value
     
     
-    def withdraw(self, amount, pin_code: str):
+    def withdraw(self, amount, pin_code: str) -> None:
         if not BankCard.is_valid_amount(amount):
             raise ValueError('Нельзя делать покупки на отрицательную сумму')
         
@@ -288,14 +288,14 @@ class CreditCard(BankCard):
             raise ValueError(f'Ошибка: Недостаточно средств')
         
 
-    def get_info_bonus(self):
+    def get_info_bonus(self) -> str:
         if self.balance < 0:
             return (f'Долг по кредиту: {abs(self.balance)}')
          
         else:
             return (f'Долг отсутсвует')
         
-    def display_info(self):
+    def display_info(self) -> str:
         print(f'Владелец: {self.owner}, Баланс: {max(0,self.balance)} Общий баланс: {self.general_balance} ')
 
 

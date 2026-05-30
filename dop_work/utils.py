@@ -73,7 +73,7 @@ class BankError(Exception):
 
 class InsufficientFundsError(BankError):
     '''недостаточно средств'''
-    def __init__(self,balance, amount):
+    def __init__(self,balance, amount) -> None:
         self.balance = balance
         self.amount = amount
 
@@ -82,6 +82,6 @@ class InsufficientFundsError(BankError):
 
 class InvalidPinError(BankError):
     '''неверный пин код'''
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(f'Неверный пин')
 
