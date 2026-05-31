@@ -21,7 +21,7 @@ class BankCard:
     observers: list[CardObserver]
     commission: Commission
 
-    def __init__(self, id: int, owner_id: int, balance: int, pin: str, commission: int) -> None:
+    def __init__(self, id: int, owner_id: int, balance: int, pin: str, commission: Commission) -> None:
         if balance < 0:
             raise ValueError('Неправильный начальный баланс')
 
@@ -33,7 +33,7 @@ class BankCard:
         self.pin = pin
         self.transaction_history = []
         self.observers = [LogNotification()]
-        self.commission = Commission(commission)
+        self.commission = commission
         self.limit_checker = CardLimit()
 
     def __str__(self) -> str:
