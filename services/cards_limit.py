@@ -1,5 +1,13 @@
 import datetime
-from models.cards import BankCard
+from typing import TYPE_CHECKING
+
+
+
+if TYPE_CHECKING:
+    from OOP_TRAIN.models import BankCard
+
+
+
 
 class DailyLimitExceededError(Exception):
     pass
@@ -9,7 +17,7 @@ class CardLimit:
     def __init__(self):
         self.card_limit = {}
 
-    def check_limit(self, card: BankCard, amount: int) -> None:
+    def check_limit(self, card: 'BankCard', amount: int) -> None:
         if amount > card.daily_limit:
             raise ValueError('Слишком большая сумма')
         date = datetime.date.today()

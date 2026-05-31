@@ -4,6 +4,7 @@ from models.transaction import Transaction, Deposit, Withdraw, transaction_to_st
 from dop_work.utils import Commission
 from dop_work.observers import CardObserver, LogNotification
 from dop_work.error import InvalidPinError
+from services.cards_limit import CardLimit
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
@@ -20,7 +21,7 @@ class BankCard:
     observers: list[CardObserver]
     commission: Commission
 
-    def __init__(self, id: int, owner_id: int, balance: int, pin: str, commission: Commission) -> None:
+    def __init__(self, id: int, owner_id: int, balance: int, pin: str, commission: int) -> None:
         if balance < 0:
             raise ValueError('Неправильный начальный баланс')
 
@@ -32,7 +33,8 @@ class BankCard:
         self.pin = pin
         self.transaction_history = []
         self.observers = [LogNotification()]
-        self.commission = commission
+        self.commission = Commission(commission)
+        self.limit_checker = CardLimit()
 
     def __str__(self) -> str:
         return f'ID: {self.id} {type(self).__name__} ID Владельца: {self.owner_id}, Баланс: {self.balance}'
@@ -87,7 +89,7 @@ class BankCard:
         self.balance += amount
 
         '''эту поправить на более стандартизированную'''
-        self._notify('Пополнение', amount)
+        self._notify('Пополнение', amount, self.id)
 
         self.transaction_history.append(Transaction(Deposit(amount)))
 
@@ -97,7 +99,7 @@ class BankCard:
         self.validate_pin(pin_code)
 
         '''пофиксить а то красным горит'''
-        #.check_limit(self, amount)
+        self.limit_checker.check_limit(self, amount)
 
         if self.balance < amount:
             raise ValueError('Недостаточно средств на балансе')
@@ -109,7 +111,7 @@ class BankCard:
         self.transaction_history.append(Transaction(Withdraw(amount, commission)))
 
         '''эту поправить на более стандартизированную'''
-        self._notify('Снятие', total)
+        self._notify('Снятие', total, self.id)
 
         '''todo реально отправить деньги юзеру'''
 
@@ -138,9 +140,9 @@ class BankCard:
         for i, obs in enumerate(self.observers):
             print(f'{i+1}. {type(obs).__name__}')
 
-    def _notify(self, event: str, amount: int) -> None:
+    def _notify(self, event: str, amount: int, card_id: int) -> None:
         for observer in self.observers:
-            observer.update(event, amount, self.id)
+            observer.update(event, amount, card_id)
 
     def validate_pin(self, pin: str) -> None:
         if self.pin != pin:
