@@ -1,6 +1,6 @@
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
-from sqlite3.dbapi2 import Timestamp
 
 @dataclass(frozen=True)
 class Deposit:
@@ -25,11 +25,11 @@ TransactionKind = Deposit | Withdraw | Transfer
 
 class Transaction:
     kind: TransactionKind
-    time: Timestamp
+    time: datetime
 
     def __init__(self, kind: TransactionKind) -> None:
         self.kind = kind
-        self.time = Timestamp.utcnow()
+        self.time = datetime.now(timezone.utc)
 
 def transaction_to_str(transaction: Transaction) -> str:
     time = transaction.time.strftime("%d.%m.%Y %H:%M")
