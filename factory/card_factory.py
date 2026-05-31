@@ -8,7 +8,7 @@ from models.cards import *
 
 
 
-class CardFactory:
+'''class CardFactory:
     
     @staticmethod
     def create_card (type_card: str, owner: str, balance: int, pin: str) -> BankCard | GoldCard:
@@ -21,4 +21,4 @@ class CardFactory:
             return BankCard(owner, balance, pin, StandardComission())
         
         else:
-            raise ValueError(f"Тип карты '{type_card}' не поддерживается")
+            raise ValueError(f"Тип карты '{type_card}' не поддерживается")'''

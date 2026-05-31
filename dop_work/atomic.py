@@ -33,8 +33,7 @@ class AtomicPayment:
             logging.error(f'произошла ошибка: {exc_val}.Начинаю откатывать балансы')
 
             for card in self.user.cards:
-                if card.id in self.snapshot:
-                    card._balance = self.snapshot[card.id]
+                card.balance = self.snapshot.get(card.id, card.balance)
             logging.info(f"откат завершен")
         else:
             logging.info(f'транцзации успешно прошла')

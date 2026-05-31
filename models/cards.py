@@ -8,9 +8,9 @@ from dop_work.observers import *
 from dop_work.utils import *
 from dop_work.logi import *
 from models.transaction import *
-import json
 from uuid import uuid4
 import logging
+from datetime import datetime, timezone
 
 class BankCard:
     id: int
@@ -23,8 +23,8 @@ class BankCard:
     observers: list[CardObserver]
     comission: Commission
 
-    def __init__(self, id: int, owner_id: int, balance: int, pin: str, comission: Commission) -> None:
-        if not BankCard.validate_amount(balance):
+    def __init__(self, id: int, owner_id: int, balance: int, pin: str, comission_type: int) -> None:
+        if balance < 0:
             raise ValueError('Неправильный начальный баланс')
 
         self.id = id
@@ -35,13 +35,13 @@ class BankCard:
         self.pin = pin
         self.transaction_history = []
         self.observers = [LogNotification()]
-        self.comission = comission
+        self.comission = Commission(comission_type)
 
     def __str__(self) -> str:
-        return f'ID: {self.__id} {type(self).__name__} Владелец: {self.owner}, Баланс: {self.balance}'
+        return f'ID: {self.id} {type(self).__name__} ID Владельца: {self.owner_id}, Баланс: {self.balance}'
 
     def __repr__(self):
-        return f'BankCard(id = {self.id}, owner = {self.owner}, balance = {self.balance}, comission: {type(self.comission).__name__})'
+        return f'BankCard(id = {self.id}, owner_id = {self.owner_id}, balance = {self.balance}, comission: {type(self.comission).__name__})'
 
     def __gt__(self, other) -> bool:
         if  not isinstance(other, (int, BankCard )):
@@ -68,7 +68,7 @@ class BankCard:
             raise TypeError('данные введены некоректно')
         else:
             summ_balance = self.balance + other.balance
-            return type(self)(self.owner, summ_balance, self.my_pin, self.comission)
+            return type(self)(self.owner, summ_balance, self.pin, self.comission)
 
     def __len__(self) -> int:
         return len(self.transaction_history)
@@ -92,10 +92,7 @@ class BankCard:
         '''эту поправить на более стандартизированную'''
         self._notify('Пополнение', amount)
 
-        self.transaction_history.append(Deposit(amount))
-
-        '''мб удалить раз есть обсерверы с коллбеками'''
-        print(f'Счёт пополнен на {amount}')
+        self.transaction_history.append(Deposit(amount, time=datetime.now(timezone.utc)))
 
     def withdraw(self, amount: int, pin_code: str) -> None:
         BankCard.validate_amount(amount)
@@ -103,16 +100,16 @@ class BankCard:
         self.validate_pin(pin_code)
 
         '''пофиксить а то красным горит'''
-        self.card_limit_checker.check_limit(self, amount)
+        #.check_limit(self, amount)
 
         if self.balance < amount:
             raise ValueError('Недостаточно средств на балансе')
 
-        comission = self.comission.calculate(amount)
-        total = amount + comission
+        comis = self.comission.calculate(amount)
+        total = amount + comis
 
         self.balance -= total
-        self.transaction_history.append(Withdraw(amount=amount, comission=comission))
+        self.transaction_history.append(Withdraw(amount=amount, comission=comis, time=datetime.now(timezone.utc)))
 
         '''эту поправить на более стандартизированную'''
         self._notify('Снятие', total)

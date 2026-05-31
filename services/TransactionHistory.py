@@ -43,13 +43,17 @@ class TransactionHistory:
     
     
     def get_last(self, n: int) -> List[Transaction]:
+        if n <= 0:
+            return []
+
         return self.all_transaction[-n:]
     
     
     def filter_by_date(self, date: str) -> List[Transaction]:
         res = []
+        fmt = "%d.%m.%Y"
         for trans in self.all_transaction:
-            if trans.trans_time.startswith(date):
+            if trans.time.strftime(fmt).startswith(date):
                 res.append(trans)
         if res:
             return res 

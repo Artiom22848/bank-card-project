@@ -10,7 +10,7 @@ class Commission(Enum):
     def calculate(self, amount: int) -> int:
         match self:
             case Commission.STANDARD:
-                return int(float(amount) * 0.01)
+                return round(amount * 0.01)
             case Commission.FREE:
                 return 0
 
@@ -24,7 +24,7 @@ class TransactionLimit:
         @wraps(func)
         def wrapper(*args, **kwargs):
             card = args[0]
-            card_id = card.id
+            card_id = card.card_id
 
             current_calls = self.calls_data.get(card_id, 0)
 
@@ -35,11 +35,6 @@ class TransactionLimit:
             else:
                 raise PermissionError(f'Лимит бесплатных вызовов для карты {card.id} исчерпан!')
         return wrapper
-
-
-def require_auth(func:Callable):
-    raise NotImplementedError
-
 
 
 def trace_transaction(func: Callable):

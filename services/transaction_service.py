@@ -6,6 +6,7 @@ from models.transaction import Transaction
 from collections import defaultdict
 from typing import List
 from models.user import User
+from models.transaction import *
 
 class TransactionAnalyzer:
     """класс для работы с транзакциями сразу у нескольких карт"""
@@ -27,7 +28,7 @@ class TransactionAnalyzer:
 
     def top_expenses(self, n: int) -> List[Transaction]:
         
-        expenses = [trans for trans in self.trans if trans.type == 'Снятие']
+        expenses = [trans for trans in self.trans if isinstance(trans, Withdraw) or ((isinstance(trans, Transfer) and trans.transfer_type == TransferType.TO))]
         if len(expenses) == 0:
             return []
             
@@ -62,13 +63,12 @@ class TransactionAnalyzer:
     def monthly_report(self) -> dict:
         res = defaultdict(lambda: defaultdict(int))
         for t in self.trans:
-            month = t.trans_time[:7]
+            month = t.time.strftime('%Y-%m')
             res[month][t.type] += t.amount
         for month, trans_types in res.items():
             print(f'{month}')
             for type_name, amount in trans_types.items():
                 print(f'    {type_name}: {amount}₽')
-                end = sum(am if tp == 'Пополнение' else -am
-                for tp, am in trans_types.items())
+            end = sum(am if tp == 'Депозит' else -am for tp, am in trans_types.items())
             print(f'    Итог: {end}₽')
         return dict(res)

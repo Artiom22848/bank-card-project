@@ -41,7 +41,7 @@ class SecurityMixin:
             raise ValueError
         
 
-class LoggingMixn:
+class LoggingMixin:
     def withdraw(self, amount: int, pin_code):
-        logging.exception("выполняю сбор информации")
+        logging.info("выполняю сбор информации")
         super().withdraw(amount, pin_code)
