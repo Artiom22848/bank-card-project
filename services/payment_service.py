@@ -1,9 +1,7 @@
 import os
 import sys
-
-from dop_work.utils import *
+from models.transaction import Transaction, Transfer, TransferType
 from models.cards import BankCard
-from models.transaction import Transfer, TransferType
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
@@ -34,8 +32,8 @@ class PaymentSystem:
         from_card.balance -= amount
         to_card.balance += amount
         self._total_volume += amount
-        from_card.transaction_history.append(Transfer(amount, to_card.id, TransferType.TO))
-        to_card.transaction_history.append(Transfer(amount, from_card.id, TransferType.FROM))
+        from_card.transaction_history.append(Transaction(Transfer(amount, to_card.id, TransferType.TO)))
+        to_card.transaction_history.append(Transaction(Transfer(amount, from_card.id, TransferType.FROM)))
 
     @classmethod
     def get_stats(cls):

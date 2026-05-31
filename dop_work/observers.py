@@ -5,21 +5,19 @@ import logging
 
 class CardObserver(ABC):
     @abstractmethod
-    def update(self, event: str, amount: int, card_id: str) -> None:
+    def update(self, event: str, amount: int, card_id: int) -> None:
         pass
 
 
 class SMSNotification(CardObserver):
-    def update(self, event: str, amount: int, card_id: str) -> None:
+    def update(self, event: str, amount: int, card_id: int) -> None:
         print (f'[SMS] Карта {card_id}: {event} на сумму {amount} ₽')
 
 class EmailNotification(CardObserver):
-    def update(self, event: str, amount: int, card_id: str) -> None:
+    def update(self, event: str, amount: int, card_id: int) -> None:
         print (f'[Email] Карта {card_id}: {event} на сумму {amount} ₽')
 
-        
-class LogNotification(CardObserver):
-    def update(self, event: str, amount: int, card_id: str) -> None:
-        logging.info(f'[NOTIFICATION] Карта {card_id}: {event} на сумму {amount} ₽')
 
-    
+class LogNotification(CardObserver):
+    def update(self, event: str, amount: int, card_id: int) -> None:
+        logging.info(f'[NOTIFICATION] Карта {card_id}: {event} на сумму {amount} ₽')

@@ -1,16 +1,13 @@
 import sys
 import os
+from models.transaction import Transaction, Deposit, Withdraw, transaction_to_str
+from dop_work.utils import Commission
+from dop_work.observers import CardObserver, LogNotification
+from dop_work.error import InvalidPinError
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
-from dop_work.observers import *
-from dop_work.utils import *
-from dop_work.logi import *
-from models.transaction import *
-from uuid import uuid4
-import logging
-from datetime import datetime, timezone
 
 class BankCard:
     id: int
@@ -21,9 +18,9 @@ class BankCard:
     pin: str
     transaction_history: list[Transaction]
     observers: list[CardObserver]
-    comission: Commission
+    commission: Commission
 
-    def __init__(self, id: int, owner_id: int, balance: int, pin: str, comission_type: int) -> None:
+    def __init__(self, id: int, owner_id: int, balance: int, pin: str, commission: Commission) -> None:
         if balance < 0:
             raise ValueError('Неправильный начальный баланс')
 
@@ -35,13 +32,13 @@ class BankCard:
         self.pin = pin
         self.transaction_history = []
         self.observers = [LogNotification()]
-        self.comission = Commission(comission_type)
+        self.commission = commission
 
     def __str__(self) -> str:
         return f'ID: {self.id} {type(self).__name__} ID Владельца: {self.owner_id}, Баланс: {self.balance}'
 
     def __repr__(self):
-        return f'BankCard(id = {self.id}, owner_id = {self.owner_id}, balance = {self.balance}, comission: {type(self.comission).__name__})'
+        return f'BankCard(id = {self.id}, owner_id = {self.owner_id}, balance = {self.balance}, comission: {type(self.commission).__name__})'
 
     def __gt__(self, other) -> bool:
         if  not isinstance(other, (int, BankCard )):
@@ -68,7 +65,7 @@ class BankCard:
             raise TypeError('данные введены некоректно')
         else:
             summ_balance = self.balance + other.balance
-            return type(self)(self.owner, summ_balance, self.pin, self.comission)
+            return BankCard(self.id, self.owner_id, summ_balance, self.pin, self.commission)
 
     def __len__(self) -> int:
         return len(self.transaction_history)
@@ -92,7 +89,7 @@ class BankCard:
         '''эту поправить на более стандартизированную'''
         self._notify('Пополнение', amount)
 
-        self.transaction_history.append(Deposit(amount, time=datetime.now(timezone.utc)))
+        self.transaction_history.append(Transaction(Deposit(amount)))
 
     def withdraw(self, amount: int, pin_code: str) -> None:
         BankCard.validate_amount(amount)
@@ -105,11 +102,11 @@ class BankCard:
         if self.balance < amount:
             raise ValueError('Недостаточно средств на балансе')
 
-        comis = self.comission.calculate(amount)
-        total = amount + comis
+        commission = self.commission.calculate(amount)
+        total = amount + commission
 
         self.balance -= total
-        self.transaction_history.append(Withdraw(amount=amount, comission=comis, time=datetime.now(timezone.utc)))
+        self.transaction_history.append(Transaction(Withdraw(amount, commission)))
 
         '''эту поправить на более стандартизированную'''
         self._notify('Снятие', total)

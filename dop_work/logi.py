@@ -6,13 +6,10 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[
         logging.FileHandler("bank.log", encoding='utf-8'),
-        logging.StreamHandler()         
+        logging.StreamHandler()
     ],
-    force=True 
+    force=True
     )
-
-
-
 
 class LimitMixin:
 
@@ -29,7 +26,7 @@ class NotificationMixin:
     def withdraw(self, amount: int, pin: str):
         super().withdraw(amount, pin)
         print(f'[SMS-Уведомление]: С вашей карты списано {amount} руб')
-    
+
 
 
 class SecurityMixin:
@@ -39,7 +36,7 @@ class SecurityMixin:
             super().withdraw(amount, pin_code)
         else:
             raise ValueError
-        
+
 
 class LoggingMixin:
     def withdraw(self, amount: int, pin_code):

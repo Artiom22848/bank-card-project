@@ -1,13 +1,10 @@
 import sys
 import os
+from models.cards import BankCard
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
-from services.stats import CardStats
-from dop_work.utils import *
-import logging
-from models.cards import BankCard
 
 class User:
     id: int
@@ -40,7 +37,7 @@ class User:
             return
 
         card.is_frozen = True
-        card._notify(f'Карта {type(card).__name__} заморожена')
+        card._notify(f'Карта {type(card).__name__} заморожена', 0)
 
     def unfreeze_card(self, card_id: int) -> None:
         card = self.get_card_by_id(card_id)
@@ -48,7 +45,7 @@ class User:
             return
 
         card.is_frozen = False
-        card._notify(f'Карта {type(card).__name__} разморожена')
+        card._notify(f'Карта {type(card).__name__} разморожена', 0)
 
     def show_all_bonuses(self) -> None:
         for card in self.cards:
